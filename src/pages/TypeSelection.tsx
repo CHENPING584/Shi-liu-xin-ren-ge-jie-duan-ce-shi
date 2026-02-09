@@ -4,6 +4,8 @@ import { ChevronLeft, Check, Brain, Sparkles, Shield, Flame, ArrowRight, Lock } 
 import { PERSONALITY_GROUPS } from '../data/types';
 import { getTheme } from '../utils/theme';
 
+import { verifyAuthCode } from '../utils/security';
+
 export default function TypeSelection() {
   const { category } = useParams<{ category: string }>();
   const navigate = useNavigate();
@@ -12,6 +14,7 @@ export default function TypeSelection() {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authCode, setAuthCode] = useState('');
   const [authError, setAuthError] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
 
   useEffect(() => {
     setIsLoaded(true);
@@ -28,12 +31,20 @@ export default function TypeSelection() {
     }
   };
 
-  const handleVerify = () => {
-    // Simple hardcoded auth code for demo
-    if (authCode === '520') {
-      navigate(`/assessment?category=${category}&initialType=${selectedType}`);
-    } else {
+  const handleVerify = async () => {
+    setIsVerifying(true);
+    try {
+      const isValid = await verifyAuthCode(authCode);
+      if (isValid) {
+        navigate(`/assessment?category=${category}&initialType=${selectedType}`);
+      } else {
+        setAuthError(true);
+      }
+    } catch (error) {
+      console.error('Verification failed', error);
       setAuthError(true);
+    } finally {
+      setIsVerifying(false);
     }
   };
 
@@ -73,7 +84,7 @@ export default function TypeSelection() {
       </div>
       
       {/* Header */}
-      <div className="w-full max-w-md flex items-center justify-between p-6 relative z-10">
+      <div className="w-full flex items-center justify-between p-6 px-6 md:px-12 relative z-10">
         <button 
           onClick={() => navigate('/')}
           className="group p-3 rounded-2xl bg-white/60 backdrop-blur-md border border-white/40 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.05)] hover:shadow-[0_8px_30px_-4px_rgba(0,0,0,0.1)] transition-all duration-300 active:scale-95"
@@ -112,7 +123,7 @@ export default function TypeSelection() {
       </div>
 
       {/* Type Cards */}
-      <div className="w-full max-w-md px-5 space-y-5 pb-40 z-10">
+      <div className="w-full px-5 md:px-12 space-y-5 md:space-y-0 md:grid md:grid-cols-2 lg:grid-cols-4 md:gap-6 pb-40 z-10">
         {types.map((type, index) => (
           <button
             key={type.code}
@@ -178,7 +189,7 @@ export default function TypeSelection() {
       </div>
 
       {/* Bottom Action */}
-      <div className="fixed bottom-8 w-full max-w-md px-6 z-20">
+      <div className="fixed bottom-8 w-full max-w-md left-1/2 -translate-x-1/2 px-6 z-20">
         <button
           onClick={handleStart}
           disabled={!selectedType}
@@ -211,12 +222,26 @@ export default function TypeSelection() {
           />
           <div className="bg-white rounded-3xl p-8 w-full max-w-sm relative z-10 shadow-2xl animate-in fade-in zoom-in duration-300">
             <div className="flex justify-center mb-6">
-              <div 
-                className="w-16 h-16 rounded-2xl flex items-center justify-center shadow-lg transform -rotate-3"
-                style={{ background: `linear-gradient(135deg, ${theme.primary}, ${theme.secondary})` }}
+              <a 
+                href="https://xhslink.com/m/AGcYFI8Bebo" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center px-4 py-1.5 bg-red-50 text-red-500 border border-red-100 rounded-full text-sm font-bold tracking-wide hover:bg-red-100 transition-colors"
               >
-                <Lock className="w-8 h-8 text-white" />
-              </div>
+                小红书：心声事务所
+              </a>
+            </div>
+
+            <div className="flex flex-col items-center justify-center mb-6">
+               <div 
+                 className="w-16 h-16 rounded-2xl flex items-center justify-center shadow-lg transform -rotate-3 mb-3"
+                 style={{ background: `linear-gradient(135deg, ${theme.primary}, ${theme.secondary})` }}
+               >
+                 <Lock className="w-8 h-8 text-white" />
+               </div>
+               <p className="text-xs text-gray-400 font-medium">
+                 可在上方点击小红书店铺，获得授权码
+               </p>
             </div>
             
             <h3 className="text-2xl font-black text-gray-900 mb-2 text-center">请输入授权码</h3>
@@ -259,10 +284,11 @@ export default function TypeSelection() {
               </button>
               <button 
                 onClick={handleVerify}
-                className="flex-1 py-3.5 rounded-xl font-bold text-white shadow-lg shadow-purple-200 hover:shadow-purple-300 hover:-translate-y-0.5 transition-all"
+                disabled={isVerifying}
+                className="flex-1 py-3.5 rounded-xl font-bold text-white shadow-lg shadow-purple-200 hover:shadow-purple-300 hover:-translate-y-0.5 transition-all disabled:opacity-70 disabled:cursor-not-allowed"
                 style={{ background: `linear-gradient(135deg, ${theme.primary}, ${theme.secondary})` }}
               >
-                确认解锁
+                {isVerifying ? '验证中...' : '确认解锁'}
               </button>
             </div>
           </div>

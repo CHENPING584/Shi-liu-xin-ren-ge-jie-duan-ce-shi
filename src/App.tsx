@@ -8,7 +8,7 @@ import Archive from './pages/Archive'
 function App() {
   return (
     <Router>
-      <div className="min-h-screen bg-gray-50 text-gray-900 font-sans max-w-md mx-auto shadow-xl bg-white min-h-screen">
+      <div className="min-h-screen bg-gray-50 text-gray-900 font-sans">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/select-type/:category" element={<TypeSelection />} />

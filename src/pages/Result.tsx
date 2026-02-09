@@ -20,6 +20,8 @@ export default function Result() {
   const [isCapturing, setIsCapturing] = useState(false);
   const hasSaved = useRef(false);
   
+  const score = (location.state as any)?.score || 88; // Default to 88 if not provided
+  
   // Rolling text state
   const [displayLevel, setDisplayLevel] = useState("计算中...");
   const [isRolling, setIsRolling] = useState(true);
@@ -141,8 +143,6 @@ export default function Result() {
 
   const theme = getTheme(data.category);
 
-  const score = (location.state as any)?.score || 88; // Default to 88 if not provided
-
   // Chart Data
   const chartData = data.radar.map(item => ({
     subject: item.label,
@@ -205,59 +205,86 @@ export default function Result() {
       </div>
 
       {/* Header */}
-      <header className="flex justify-between items-center p-4 bg-white/60 backdrop-blur-md sticky top-0 z-10 border-b border-white/40 shadow-sm" data-html2canvas-ignore>
-        <button onClick={() => navigate(-1)} className="p-2 hover:bg-white/50 rounded-full transition-colors">
-          <ChevronLeft className="w-5 h-5 text-gray-600" />
-        </button>
-        <span className="font-medium text-gray-700">16人格·心智阶位测评</span>
-        <div className="flex gap-4 text-gray-500">
-          <Plus className="w-5 h-5" />
-          <RefreshCcw className="w-5 h-5" />
+      <header className="bg-white/60 backdrop-blur-md sticky top-0 z-10 border-b border-white/40 shadow-sm" data-html2canvas-ignore>
+        <div className="flex justify-between items-center p-4 w-full px-6 md:px-12">
+          <button onClick={() => navigate(-1)} className="p-2 hover:bg-white/50 rounded-full transition-colors">
+            <ChevronLeft className="w-5 h-5 text-gray-600" />
+          </button>
+          <span className="font-medium text-gray-700">16人格·心智阶位测评</span>
+          <div className="flex gap-4 text-gray-500">
+            <Plus className="w-5 h-5" />
+            <RefreshCcw className="w-5 h-5" />
+          </div>
         </div>
       </header>
 
-      <div className="p-4 space-y-6 pb-28 max-w-md mx-auto w-full relative z-10">
+      <div className="p-4 w-full px-6 md:px-12 relative z-10 pb-28">
         {/* Top Card - Gradient */}
         <div 
-          className="rounded-3xl p-8 text-white shadow-xl shadow-gray-200 relative overflow-hidden transition-transform hover:scale-[1.01]"
-          style={{ background: `linear-gradient(135deg, ${theme.gradientFrom}, ${theme.gradientTo})` }}
+          className="rounded-[2.5rem] p-8 text-white shadow-2xl shadow-purple-900/20 relative overflow-hidden group isolate transition-transform hover:scale-[1.01] duration-500 mb-6"
+          style={{ 
+            background: `linear-gradient(135deg, ${theme.gradientFrom}, ${theme.gradientTo})`
+          }}
         >
-          {/* Background Pattern */}
-          <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl"></div>
-          <div className="absolute bottom-0 left-0 w-32 h-32 bg-black/5 rounded-full translate-y-1/2 -translate-x-1/2 blur-2xl"></div>
+          {/* Noise Texture */}
+          <div className="absolute inset-0 opacity-10 mix-blend-overlay pointer-events-none" 
+             style={{ 
+               backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` 
+             }} 
+          />
+          
+          {/* Ambient Light Orbs */}
+          <div className="absolute -top-24 -right-24 w-64 h-64 bg-white/20 rounded-full blur-3xl mix-blend-overlay animate-pulse"></div>
+          <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-purple-500/30 rounded-full blur-3xl mix-blend-overlay"></div>
 
-          <div className="absolute top-6 right-6 bg-white/20 backdrop-blur-md px-3 py-1.5 rounded-full text-xs font-bold tracking-wide border border-white/10">
-             总分: {score}
+          {/* Score Badge */}
+          <div className="absolute top-6 right-6 flex items-center gap-2 bg-white/10 backdrop-blur-md pl-3 pr-4 py-1.5 rounded-full border border-white/20 shadow-lg group-hover:bg-white/20 transition-all duration-300">
+             <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse shadow-[0_0_8px_rgba(74,222,128,0.5)]"></div>
+             <span className="text-xs font-bold tracking-wider">总分 {score}</span>
           </div>
           
-          <div className="flex items-center gap-5 mb-6 relative z-10">
-            <h1 className={`text-5xl font-bold tracking-tighter opacity-90 transition-all duration-300 ${isRolling ? 'animate-pulse blur-[2px]' : ''}`}>
-              {displayLevel}
-            </h1>
-            <div className="w-px h-12 bg-gradient-to-b from-transparent via-white/50 to-transparent"></div>
-            <div>
-              <h1 className="text-4xl font-black leading-none tracking-tight">{data.code}</h1>
-              <div className="text-xs uppercase opacity-80 font-bold tracking-[0.2em] mt-1">{data.name}</div>
+          {/* Main Content Area */}
+          <div className="flex flex-col gap-8 mt-4 relative z-10">
+            {/* Split Layout: Level & Type */}
+            <div className="flex items-end justify-between">
+               <div className="flex flex-col">
+                  <span className="text-xs font-bold opacity-70 mb-2 tracking-[0.2em] uppercase pl-1">当前心智阶段</span>
+                  <h1 className={`text-6xl font-black tracking-tighter leading-none transition-all duration-500 ${isRolling ? 'animate-pulse blur-[1px]' : ''}`}
+                      style={{ textShadow: '0 4px 16px rgba(0,0,0,0.2)' }}>
+                    {displayLevel}
+                  </h1>
+               </div>
+               
+               <div className="text-right">
+                  <h2 className="text-5xl font-black tracking-tighter opacity-90 drop-shadow-lg">{data.code}</h2>
+                  <div className="text-sm font-bold opacity-80 tracking-[0.4em] uppercase mt-2 border-t border-white/30 pt-2 inline-block">
+                    {data.name}
+                  </div>
+               </div>
             </div>
-          </div>
 
-          <div className="flex flex-wrap gap-2 mb-8 relative z-10">
-            {data.tags.map(tag => (
-              <span key={tag} className="px-3 py-1 bg-white/10 border border-white/20 rounded-lg text-xs font-medium backdrop-blur-md">
-                {tag}
-              </span>
-            ))}
-          </div>
+            {/* Tags */}
+            <div className="flex flex-wrap gap-2">
+              {data.tags.map(tag => (
+                <span key={tag} className="px-4 py-1.5 bg-white/10 hover:bg-white/20 border border-white/10 rounded-full text-xs font-bold tracking-wide backdrop-blur-sm transition-colors duration-300 cursor-default shadow-sm">
+                  #{tag}
+                </span>
+              ))}
+            </div>
 
-          <div className="border-t border-white/10 pt-5 relative z-10">
-            <p className="text-sm italic leading-relaxed opacity-90 font-medium">
-              "{data.quote}"
-            </p>
+            {/* Quote */}
+            <div className="relative pt-6 border-t border-white/10">
+              <span className="absolute -top-5 left-0 text-6xl leading-none opacity-20 font-serif">"</span>
+              <p className="text-lg font-medium leading-relaxed opacity-95 italic pl-6 relative z-10">
+                {data.quote}
+              </p>
+            </div>
           </div>
         </div>
 
+        <div className="columns-1 md:columns-2 lg:columns-3 gap-6">
         {/* Radar Chart */}
-        <div className="bg-white/70 backdrop-blur-md rounded-3xl p-6 shadow-xl shadow-gray-100/50 border border-white/50">
+        <div className="bg-white/70 backdrop-blur-md rounded-3xl p-6 shadow-xl shadow-gray-100/50 border border-white/50 break-inside-avoid mb-6">
           <h3 className="font-bold text-lg text-gray-800 mb-6 flex items-center gap-2">
             <div className="w-1 h-5 rounded-full" style={{ backgroundColor: theme.primary }}></div>
             阶位能量图谱
@@ -281,7 +308,7 @@ export default function Result() {
         </div>
 
         {/* Score Bars */}
-        <div className="bg-white rounded-3xl p-6 shadow-xl shadow-gray-100/50 border border-gray-50 space-y-5">
+        <div className="bg-white rounded-3xl p-6 shadow-xl shadow-gray-100/50 border border-gray-50 space-y-5 break-inside-avoid mb-6">
           {data.radar.map(item => (
             <div key={item.label} className="flex items-center gap-4">
               <span className="w-20 text-xs font-bold text-gray-500">{item.label}</span>
@@ -297,7 +324,7 @@ export default function Result() {
         </div>
 
         {/* Prototype & Core Identity */}
-        <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-8 shadow-xl shadow-gray-200/50 border border-white/60 relative overflow-hidden group">
+        <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-8 shadow-xl shadow-gray-200/50 border border-white/60 relative overflow-hidden group break-inside-avoid mb-6">
           <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-gray-100 to-transparent rounded-bl-full opacity-50 group-hover:scale-110 transition-transform duration-700"></div>
           
           <div className="relative z-10">
@@ -363,7 +390,7 @@ export default function Result() {
 
         {/* Social Mask & Reality - New Section */}
         {data.social && (
-          <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-8 shadow-xl shadow-gray-200/50 border border-white/60">
+          <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-8 shadow-xl shadow-gray-200/50 border border-white/60 break-inside-avoid mb-6">
              <div className="flex items-center gap-3 mb-6">
                <div className="p-2.5 rounded-xl bg-purple-50 text-purple-600">
                  <BookOpen className="w-5 h-5" />
@@ -413,7 +440,7 @@ export default function Result() {
 
         {/* Current Status Diagnosis */}
         {data.diagnosis && (
-          <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-8 shadow-xl shadow-gray-200/50 border border-white/60">
+          <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-8 shadow-xl shadow-gray-200/50 border border-white/60 break-inside-avoid mb-6">
              <div className="flex items-center gap-3 mb-6">
                <div className="p-2.5 rounded-xl bg-blue-50 text-blue-600">
                  <AlertTriangle className="w-5 h-5" />
@@ -431,7 +458,7 @@ export default function Result() {
         )}
 
         {/* Career & Soulmate Split */}
-        <div className="grid grid-cols-1 gap-6">
+        <div className="grid grid-cols-1 gap-6 break-inside-avoid mb-6">
            {/* Career */}
            <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-6 shadow-lg shadow-gray-100/50 border border-white/60">
               <div className="flex items-center gap-3 mb-5">
@@ -478,7 +505,7 @@ export default function Result() {
         </div>
 
         {/* Evolution List */}
-        <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-8 shadow-xl shadow-gray-200/50 border border-white/60">
+        <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-8 shadow-xl shadow-gray-200/50 border border-white/60 break-inside-avoid mb-6">
            <div className="flex items-center gap-3 mb-6">
              <div className="p-2.5 rounded-xl bg-violet-50 text-violet-600">
                <List className="w-5 h-5" />
@@ -499,7 +526,7 @@ export default function Result() {
         </div>
 
         {/* Diagnosis */}
-        <div className="bg-white rounded-3xl p-6 shadow-xl shadow-gray-100/50 border border-gray-50">
+        <div className="bg-white rounded-3xl p-6 shadow-xl shadow-gray-100/50 border border-gray-50 break-inside-avoid mb-6">
            <div className="flex items-center gap-2 mb-6 font-bold text-gray-800 border-b border-gray-100 pb-4">
             <div className="p-2 rounded-lg bg-gray-50" style={{ color: theme.primary }}>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5">
@@ -520,10 +547,12 @@ export default function Result() {
           </div>
         </div>
 
+        </div>
+
       </div>
 
       {/* Fixed Bottom Action Bar */}
-      <div className="fixed bottom-0 w-full max-w-md bg-white border-t p-4 flex gap-4 z-20 pb-8" data-html2canvas-ignore>
+      <div className="fixed bottom-0 left-0 right-0 mx-auto w-full max-w-md md:max-w-md bg-white border-t p-4 flex gap-4 z-20 pb-8 md:pb-4 md:rounded-t-3xl md:shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.1)]" data-html2canvas-ignore>
         <button 
           onClick={handleRetest}
           className="flex-1 py-3 bg-gray-100 text-gray-700 rounded-full font-medium flex items-center justify-center gap-2 hover:bg-gray-200 transition-colors"

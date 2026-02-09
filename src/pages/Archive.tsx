@@ -44,27 +44,29 @@ export default function Archive() {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col font-sans">
       {/* Header */}
-      <header className="flex justify-between items-center p-4 bg-white sticky top-0 z-10 border-b border-gray-100 shadow-sm">
-        <button 
-          onClick={() => navigate('/')} 
-          className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-        >
-          <ChevronLeft className="w-5 h-5 text-gray-600" />
-        </button>
-        <span className="font-bold text-gray-800">测试档案</span>
-        <button 
-          onClick={handleClear}
-          disabled={history.length === 0}
-          className={`p-2 rounded-full transition-colors ${
-            history.length === 0 ? 'text-gray-300' : 'text-gray-600 hover:bg-red-50 hover:text-red-500'
-          }`}
-        >
-          <Trash2 className="w-5 h-5" />
-        </button>
+      <header className="sticky top-0 z-10 bg-white border-b border-gray-100 shadow-sm">
+        <div className="flex justify-between items-center p-4 max-w-md md:max-w-4xl mx-auto w-full">
+          <button 
+            onClick={() => navigate('/')} 
+            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+          >
+            <ChevronLeft className="w-5 h-5 text-gray-600" />
+          </button>
+          <span className="font-bold text-gray-800">测试档案</span>
+          <button 
+            onClick={handleClear}
+            disabled={history.length === 0}
+            className={`p-2 rounded-full transition-colors ${
+              history.length === 0 ? 'text-gray-300' : 'text-gray-600 hover:bg-red-50 hover:text-red-500'
+            }`}
+          >
+            <Trash2 className="w-5 h-5" />
+          </button>
+        </div>
       </header>
 
       {/* Content */}
-      <main className="flex-1 p-4 max-w-md mx-auto w-full">
+      <main className="flex-1 p-4 max-w-md md:max-w-4xl mx-auto w-full">
         {history.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-[60vh] text-gray-400">
             <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mb-4">
@@ -79,7 +81,7 @@ export default function Archive() {
             </button>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {history.map((item) => {
               const theme = getTheme(item.category);
               return (

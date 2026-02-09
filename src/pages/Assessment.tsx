@@ -205,7 +205,7 @@ export default function Assessment() {
       </div>
 
       {/* Header */}
-      <div className="w-full max-w-2xl flex items-center justify-between mb-10 pt-6 relative z-10">
+      <div className="w-full max-w-5xl flex items-center justify-between mb-10 pt-6 relative z-10">
         <button 
           onClick={() => navigate('/')}
           className="p-3 rounded-2xl bg-white/60 backdrop-blur-md border border-white/40 shadow-[0_4px_20px_-2px_rgba(0,0,0,0.05)] hover:shadow-[0_8px_30px_-4px_rgba(0,0,0,0.1)] transition-all duration-300 active:scale-95"
@@ -221,7 +221,7 @@ export default function Assessment() {
       </div>
 
       {/* Progress Bar */}
-      <div className="w-full max-w-2xl h-1.5 bg-gray-200/50 rounded-full mb-12 overflow-hidden relative z-10">
+      <div className="w-full max-w-5xl h-1.5 bg-gray-200/50 rounded-full mb-12 overflow-hidden relative z-10">
         <div 
           className="h-full transition-all duration-700 ease-out rounded-full relative shadow-[0_0_15px_rgba(0,0,0,0.1)]"
           style={{ width: `${progress}%`, backgroundColor: theme.primary }}
@@ -233,7 +233,7 @@ export default function Assessment() {
       {/* Question Card */}
       <div 
         key={currentQuestion.id}
-        className="w-full max-w-2xl relative z-10 animate-fade-in-up"
+        className="w-full max-w-5xl relative z-10 animate-fade-in-up"
         style={{ animation: 'fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards' }}
       >
         <style>{`
@@ -243,16 +243,16 @@ export default function Assessment() {
           }
         `}</style>
         
-        <h2 className="text-3xl font-black text-gray-900 mb-10 leading-tight tracking-tight text-center">
+        <h2 className="text-2xl md:text-3xl font-black text-gray-900 mb-10 leading-tight tracking-tight text-center">
           {currentQuestion.text}
         </h2>
 
-        <div className="space-y-4" style={{ '--primary-color': theme.primary } as React.CSSProperties}>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4" style={{ '--primary-color': theme.primary } as React.CSSProperties}>
           {currentQuestion.options.map((option, index) => (
             <button
               key={option.label}
               onClick={() => handleOptionSelect(option.label)}
-              className={`w-full text-left p-6 rounded-3xl border-2 transition-all duration-300 flex items-center gap-5 group relative overflow-hidden
+              className={`w-full text-left p-6 rounded-3xl border-2 transition-all duration-300 flex items-center gap-5 group relative overflow-hidden h-full
                 ${answers[currentQuestion.id] === option.label 
                   ? 'shadow-[0_20px_40px_-10px_rgba(0,0,0,0.15)] scale-[1.02]' 
                   : 'border-transparent bg-white/60 hover:bg-white hover:border-[var(--primary-color)] hover:shadow-[0_10px_30px_-5px_rgba(0,0,0,0.05)] hover:-translate-y-1'
@@ -302,7 +302,7 @@ export default function Assessment() {
       </div>
 
       {/* Navigation Buttons */}
-      <div className="w-full max-w-2xl flex justify-between items-center mt-12 relative z-10">
+      <div className="w-full max-w-5xl flex justify-between items-center mt-12 relative z-10">
         <button
           onClick={handlePrevious}
           disabled={currentQuestionIndex === 0}

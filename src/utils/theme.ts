@@ -10,13 +10,13 @@ export interface Theme {
 
 export const CATEGORY_THEMES: Record<string, Theme> = {
   NT: {
-    primary: '#8B6DA8',
-    secondary: '#7A5C97',
-    gradientFrom: '#8B6DA8',
-    gradientTo: '#6A4C8C',
-    accent: '#9F7AEA',
-    bgLight: '#F3E5F5', // Purple-50 ish
-    text: '#6A4C8C'
+    primary: '#5B4DFF', // High saturation Blue-Purple
+    secondary: '#4538C2',
+    gradientFrom: '#6B5EFE',
+    gradientTo: '#3F32A3',
+    accent: '#8278FF',
+    bgLight: '#F0F2FF',
+    text: '#322B8C'
   },
   NF: {
     primary: '#4A90E2',
