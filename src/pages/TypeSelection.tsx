@@ -255,7 +255,8 @@ export default function TypeSelection() {
                 inputMode="numeric"
                 value={authCode}
                 onChange={(e) => {
-                  setAuthCode(e.target.value);
+                  // Remove whitespace immediately to avoid confusion
+                  setAuthCode(e.target.value.replace(/\s/g, ''));
                   setAuthError(false);
                 }}
                 onKeyDown={(e) => e.key === 'Enter' && handleVerify()}
