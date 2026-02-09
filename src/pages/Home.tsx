@@ -117,7 +117,7 @@ export default function Home() {
         </div>
 
         {/* Categories Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 w-full px-4 md:px-0">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 w-full px-4 md:px-0">
           {categories.map((cat, index) => (
             <button
               key={cat.id}
