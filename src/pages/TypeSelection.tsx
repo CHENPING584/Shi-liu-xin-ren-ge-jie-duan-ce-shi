@@ -14,6 +14,7 @@ export default function TypeSelection() {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authCode, setAuthCode] = useState('');
   const [authError, setAuthError] = useState(false);
+  const [authErrorMessage, setAuthErrorMessage] = useState('');
   const [isVerifying, setIsVerifying] = useState(false);
 
   useEffect(() => {
@@ -34,15 +35,17 @@ export default function TypeSelection() {
   const handleVerify = async () => {
     setIsVerifying(true);
     try {
-      const isValid = await verifyAuthCode(authCode);
-      if (isValid) {
+      const result = await verifyAuthCode(authCode);
+      if (result.valid) {
         navigate(`/assessment?category=${category}&initialType=${selectedType}`);
       } else {
         setAuthError(true);
+        setAuthErrorMessage(result.message || '授权码无效，请重试');
       }
     } catch (error) {
       console.error('Verification failed', error);
       setAuthError(true);
+      setAuthErrorMessage('验证系统错误，请重试');
     } finally {
       setIsVerifying(false);
     }
@@ -272,7 +275,7 @@ export default function TypeSelection() {
             {authError && (
               <p className="text-red-500 text-xs text-center mb-6 font-bold animate-pulse flex items-center justify-center gap-1">
                 <span className="w-1 h-1 rounded-full bg-red-500" />
-                授权码无效，请重试
+                {authErrorMessage}
               </p>
             )}
             
