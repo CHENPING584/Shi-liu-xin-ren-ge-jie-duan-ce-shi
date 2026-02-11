@@ -21,6 +21,25 @@ export async function verifyAuthCode(inputCode: string): Promise<VerificationRes
   const cleanCode = inputCode.replace(/\s+/g, '').toUpperCase();
   const currentDeviceId = getDeviceId();
 
+  // Check local storage first to reduce API calls and handle offline/refresh
+  const STORAGE_KEY_PREFIX = 'auth_status_';
+  const statusKey = `${STORAGE_KEY_PREFIX}${cleanCode}`;
+  const savedStatus = localStorage.getItem(statusKey);
+  
+  if (savedStatus) {
+    try {
+      const status = JSON.parse(savedStatus);
+      // Simple local check (24h)
+      const now = Date.now();
+      const hoursPassed = (now - status.firstUsedAt) / (1000 * 60 * 60);
+      if (hoursPassed <= 24 && status.deviceId === currentDeviceId) {
+         return { valid: true };
+      }
+    } catch (e) {
+      // ignore JSON error
+    }
+  }
+
   try {
     // Call Supabase RPC function to verify and claim the code
     const { data, error } = await supabase.rpc('verify_and_claim_code', {
@@ -38,7 +57,22 @@ export async function verifyAuthCode(inputCode: string): Promise<VerificationRes
     }
 
     // data structure returned from RPC: { valid: boolean, message?: string }
-    return data as VerificationResult;
+    const result = data as VerificationResult;
+    if (result.valid) {
+      // Store in localStorage for persistence across reloads
+      const STORAGE_KEY_PREFIX = 'auth_status_';
+      const statusKey = `${STORAGE_KEY_PREFIX}${cleanCode}`;
+      const now = Date.now();
+      
+      const newStatus = {
+        deviceId: currentDeviceId,
+        firstUsedAt: now,
+        verified: true
+      };
+      localStorage.setItem(statusKey, JSON.stringify(newStatus));
+    }
+    
+    return result;
 
   } catch (error) {
     console.error('Auth verification unexpected error:', error);
